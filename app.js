@@ -7,9 +7,10 @@ const port = 5000;
 //setting up static files and middleware
 app.use(express.static("./public"));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "./navbar-app/index.html"));
-});
+//! we don't need this if index.html is in public folder
+// app.get("/", (req, res) => {
+//   res.sendFile(path.resolve(__dirname, "./navbar-app/index.html"));
+// });
 
 app.get("/about", (req, res) => {
   res.status(200).send("About page");
