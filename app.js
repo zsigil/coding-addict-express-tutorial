@@ -15,6 +15,15 @@ app.get("/api/products", (req, res) => {
   res.json(newProducts);
 });
 
+app.get("/api/products/:productID", (req, res) => {
+  const productID = req.params.productID; //will be string!!
+  const product = products.find((p) => p.id == productID);
+  if (!product) {
+    return res.status(404).send("Product does not exist");
+  }
+  return res.json(product);
+});
+
 app.listen(port, () => {
   console.log(`App is listening on port ${port}`);
 });
