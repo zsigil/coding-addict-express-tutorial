@@ -21,7 +21,25 @@ app.get("/api/products/:productID", (req, res) => {
   if (!product) {
     return res.status(404).send("Product does not exist");
   }
-  return res.json(product);
+  res.json(product);
+});
+
+app.get("/api/v1/query", (req, res) => {
+  console.log(req.query);
+  //http://localhost:5000/api/v1/query?search=a&limit=30
+  const { search, limit } = req.query;
+  let sortedProducts = [...products]; //create copy
+  if (search) {
+    sortedProducts = sortedProducts.filter((p) => p.name.startsWith(search));
+  }
+  if (limit) {
+    sortedProducts = sortedProducts.slice(0, Number(limit)); //limit is a string!!!S
+  }
+  if (sortedProducts.length < 1) {
+    return res.status(200).json({ success: true, data: [] }); //you need to return in if statements if we are finished!
+  }
+
+  res.status(200).json(sortedProducts);
 });
 
 app.listen(port, () => {
