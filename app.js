@@ -19,6 +19,7 @@ app.get("/about", (req, res) => {
 });
 
 app.get("/api/products", (req, res) => {
+  console.log(req.user); //user key was added in authorize
   res.send("Products");
 });
 
