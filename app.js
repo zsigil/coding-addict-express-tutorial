@@ -8,7 +8,7 @@ const authorize = require("./authorize");
 
 // app.use(logger); //for all routes
 // app.use("/api", logger); // only for routes starting with /api
-app.use([logger, authorize]); //order matters!
+// app.use([logger, authorize]); //order matters!
 
 app.get("/", (req, res) => {
   res.send("Home");
@@ -18,7 +18,7 @@ app.get("/about", (req, res) => {
   res.send("About");
 });
 
-app.get("/api/products", (req, res) => {
+app.get("/api/products", [logger, authorize], (req, res) => {
   console.log(req.user); //user key was added in authorize
   res.send("Products");
 });
