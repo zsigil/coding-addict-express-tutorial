@@ -32,6 +32,24 @@ app.post("/api/people", (req, res) => {
   res.status(400).json({ result: "error", msg: "please provide a name" });
 });
 
+app.put("/api/people/:id", (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const person = people.find((p) => p.id == Number(id));
+  if (!person) {
+    return res
+      .status(400)
+      .json({ result: "error", msg: "person does not exist" });
+  }
+  const newPeople = people.map((person) => {
+    if (person.id == Number(id)) {
+      person.name = name; //!This changes original array!!!
+    }
+    return person;
+  });
+  res.status(401).json({ result: "success", data: people }); //people or newPeople
+});
+
 app.listen(port, () => {
   console.log(`App is listening on port ${port}`);
 });
