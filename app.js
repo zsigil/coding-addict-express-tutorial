@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const port = 5000;
 
-const { people } = require("./data");
+let { people } = require("./data");
 
 app.use(express.static("./methods-public"));
 
@@ -47,7 +47,20 @@ app.put("/api/people/:id", (req, res) => {
     }
     return person;
   });
-  res.status(401).json({ result: "success", data: people }); //people or newPeople
+  res.status(200).json({ result: "success", data: people }); //people or newPeople
+});
+
+app.delete("/api/people/:id", (req, res) => {
+  const { id } = req.params;
+
+  const person = people.find((p) => p.id == Number(id));
+  if (!person) {
+    return res
+      .status(400)
+      .json({ result: "error", msg: "person does not exist" });
+  }
+  people = people.filter((person) => person.id !== Number(id));
+  res.status(200).json({ result: "success", data: people });
 });
 
 app.listen(port, () => {
