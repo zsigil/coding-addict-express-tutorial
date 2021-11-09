@@ -8,7 +8,31 @@ const utils = require("../lib/utils");
 router.get("/protected", (req, res, next) => {});
 
 // TODO
-router.post("/login", function (req, res, next) {});
+router.post("/login", function (req, res, next) {
+  User.findOne({ username: req.body.username })
+    .then((user) => {
+      if (!user) {
+        res.status(401).json({ success: false, msg: "Could not find user" });
+      }
+      const isValid = utils.validPassword(
+        req.body.password,
+        user.hash,
+        user.salt
+      );
+
+      if (isValid) {
+        const tokenObject = utils.issueJWT(user);
+        res.status(200).json({
+          success: true,
+          token: tokenObject.token,
+          expiresIn: tokenObject.expires,
+        });
+      } else {
+        res.status(401).json({ success: false, msg: "Password incorrect" });
+      }
+    })
+    .catch((err) => next(err));
+});
 
 // TODO
 router.post("/register", function (req, res, next) {
@@ -17,7 +41,7 @@ router.post("/register", function (req, res, next) {
   const hash = saltHash.hash;
 
   const newUser = new User({
-    user: req.body.username,
+    username: req.body.username,
     salt: salt,
     hash: hash,
   });
