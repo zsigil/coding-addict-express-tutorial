@@ -5,7 +5,13 @@ const passport = require("passport");
 const utils = require("../lib/utils");
 
 // TODO
-router.get("/protected", (req, res, next) => {});
+router.get(
+  "/protected",
+  passport.authenticate("jwt", { session: false }),
+  (req, res, next) => {
+    res.status(200).json({ success: true, msg: "you are authorized" });
+  }
+);
 
 // TODO
 router.post("/login", function (req, res, next) {
