@@ -4,7 +4,9 @@ const fs = require("fs");
 const path = require("path");
 
 const pathToKey = path.join(__dirname, "..", "id_rsa_priv.pem");
+const pathToPublicKey = path.join(__dirname, "..", "id_rsa_pub.pem");
 const PRIV_KEY = fs.readFileSync(pathToKey, "utf8");
+const PUB_KEY = fs.readFileSync(pathToPublicKey, "utf8");
 
 /**
  * -------------- HELPER FUNCTIONS ----------------
@@ -72,6 +74,35 @@ function issueJWT(user) {
   };
 }
 
+function authMiddleware(req, res, next) {
+  //? get token from headers, check if it exists, and is correct (bearer and all string)
+  const tokenParts = req.headers?.authorization ?? "";
+  // console.log(tokenParts.split(" "));
+  if (
+    tokenParts.split(" ")[0] === "Bearer" &&
+    tokenParts.split(" ")[1].match(/\S+.\S+.\S+/) !== null
+  ) {
+    try {
+      const verification = jsonwebtoken.verify(
+        tokenParts.split(" ")[1],
+        PUB_KEY,
+        {
+          algorithms: ["RS256"],
+        }
+      );
+      //let jwt be accessible for other middlewares
+      req.jwt = verification;
+      next();
+    } catch (err) {
+      return res
+        .status(401)
+        .json({ success: false, msg: "User not authenticated" });
+    }
+  }
+  res.status(401).json({ success: false, msg: "User not authenticated" });
+}
+
 module.exports.validPassword = validPassword;
 module.exports.genPassword = genPassword;
 module.exports.issueJWT = issueJWT;
+module.exports.authMiddleware = authMiddleware;

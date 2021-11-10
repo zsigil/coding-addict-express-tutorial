@@ -4,8 +4,9 @@ const User = mongoose.model("User");
 const utils = require("../lib/utils");
 
 // TODO
-router.get("/protected", (req, res, next) => {
-  res.status(200).json({ success: true, msg: "you are authorized" });
+router.get("/protected", utils.authMiddleware, (req, res, next) => {
+  console.log(req.jwt);
+  res.status(200).json({ success: true, msg: "hurray3" });
 });
 
 // TODO
